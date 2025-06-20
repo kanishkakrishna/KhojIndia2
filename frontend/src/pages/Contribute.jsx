@@ -11,6 +11,8 @@ function Contribute() {
     description: "",
     image: null,
   });
+  const [loading, setLoading] = useState(false);
+  const [fileInputKey, setFileInputKey] = useState(Date.now());
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -23,15 +25,31 @@ function Contribute() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!user) return alert("Please login first");
+    // if (!user) {
+    //   alert("Please login first to contribute a place.");
+    //   return;
+    // }
+
+    // Only perform image size validation if an image is provided
+    if (form.image && form.image.size > 5 * 1024 * 1024) {
+      alert("Image size exceeds 5MB limit. Please choose a smaller image.");
+      return;
+    }
+
+    setLoading(true);
 
     const data = new FormData();
     Object.entries(form).forEach(([key, value]) => {
+      // Only append the image if it's not null (i.e., if a file was selected)
+      if (key === "image" && value === null) {
+        // Skip appending image if it's null (optional field)
+        return;
+      }
       data.append(key, value);
     });
 
     try {
-      const res = await API.post("/places", data, {
+      const res = await API.post("/contribute", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -45,12 +63,12 @@ function Contribute() {
         description: "",
         image: null,
       });
-
-      // Optionally reset file input
-      document.getElementById("imageInput").value = "";
+      setFileInputKey(Date.now());
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.error || "❌ Failed to contribute place");
+      console.error("Contribution error:", err);
+      alert(err.response?.data?.error || "❌ Failed to contribute place. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -92,18 +110,20 @@ function Contribute() {
         />
         <input
           id="imageInput"
-          name="image"
+          name="media"
           type="file"
           accept="image/*"
           onChange={handleChange}
           className="w-full"
-          required
+          // --- REMOVED THE 'required' ATTRIBUTE HERE ---
+          key={fileInputKey}
         />
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700 transition"
+          disabled={loading}
         >
-          Submit
+          {loading ? "Submitting..." : "Submit"}
         </button>
       </form>
     </div>
