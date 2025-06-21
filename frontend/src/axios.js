@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Create an instance
 const API = axios.create({
-  baseURL: "http://localhost:9000/api",
+  baseURL: "https://khojindia.onrender.com/api", // ✅ Updated to deployed backend
 });
 
 // Attach token to every request if available
@@ -16,3 +16,4 @@ API.interceptors.request.use((config) => {
 });
 
 export default API;
+
