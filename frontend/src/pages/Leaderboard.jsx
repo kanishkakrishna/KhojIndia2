@@ -14,7 +14,7 @@ function Leaderboard() {
         setError(null);
 
         const API_BASE_URL = import.meta.env.VITE_APP_API_URL || "http://localhost:9000";
-        const res = await axios.get(`${API_BASE_URL}/api/leaderboard`);
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/leaderboard`);
         
         // --- THE CHANGE IS HERE ---
         // Access the 'leaderboard' property from the response data

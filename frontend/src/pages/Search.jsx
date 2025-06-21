@@ -1,6 +1,6 @@
 // src/pages/Search.jsx
 import { useState } from "react";
-import axios from "axios";
+import API from "../axios"; // ✅ Use configured Axios instance
 
 function Search() {
   const [query, setQuery] = useState("");
@@ -11,7 +11,7 @@ function Search() {
     if (!query) return;
 
     try {
-      const res = await axios.get(`http://localhost:9000/api/search?query=${query}`);
+      const res = await API.get(`/search?query=${query}`); // ✅ Use API instance
       setResults(res.data);
     } catch (err) {
       console.error("Search failed:", err);
@@ -40,17 +40,15 @@ function Search() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {results.map((place) => (
             <div key={place._id} className="bg-white rounded-xl shadow p-4">
-              {/* --- ADD THIS SECTION TO DISPLAY THE IMAGE --- */}
-                {place.mediaUrl && ( // Conditionally render if mediaUrl exists
-                  <div className="mb-4 rounded-lg overflow-hidden border border-gray-200">
-                    <img 
-                      src={place.mediaUrl} 
-                      alt={`Image of ${place.localName}`} 
-                      className="w-full h-48 object-cover object-center" 
-                    />
-                  </div>
-                )}
-                {/* --- END ADDITION --- */}
+              {place.mediaUrl && (
+                <div className="mb-4 rounded-lg overflow-hidden border border-gray-200">
+                  <img
+                    src={place.mediaUrl}
+                    alt={`Image of ${place.localName}`}
+                    className="w-full h-48 object-cover object-center"
+                  />
+                </div>
+              )}
               <h3 className="text-xl font-semibold">{place.localName}</h3>
               <p className="text-sm text-gray-600">
                 {place.district}, {place.state}
