@@ -28,6 +28,8 @@ app.use("/api", placeRoutes); // ⬅️ This means routes will start with /api
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
+app.get("/api/ping", (req, res) => res.json({ ok: true }));
+
 // ✅ Start server
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
