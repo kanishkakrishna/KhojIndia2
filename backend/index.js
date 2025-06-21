@@ -7,6 +7,10 @@ require("dotenv").config();
 const app = express();
 app.use(cors());
 app.use(express.json()); // for parsing JSON body
+app.use(cors({
+  origin: 'https://khoj-india.vercel.app',
+  credentials: true, // if you're using cookies/auth
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // ✅ Connect MongoDB
