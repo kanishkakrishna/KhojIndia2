@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Create an instance
 const API = axios.create({
-  baseURL: "https://khojindia.onrender.com/api", // ✅ Updated to deployed backend
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}/api`, // ✅ Updated to deployed backend
 });
 
 // Attach token to every request if available
