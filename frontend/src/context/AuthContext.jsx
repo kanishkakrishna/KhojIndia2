@@ -1,42 +1,49 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import API from "../axios"; // Custom axios instance
+import jwtDecode from "jwt-decode"; // ✅ import decoder
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // ✅ Load user from localStorage safely when app starts
+  // Load token and decode user from localStorage
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
+      const token = localStorage.getItem("token");
+      if (token) {
+        const decoded = jwtDecode(token);
+        setUser(decoded);
       }
     } catch (err) {
-      console.error("Failed to parse user from localStorage:", err);
-      localStorage.removeItem("user"); // optional cleanup
+      console.error("Failed to decode token:", err);
+      localStorage.removeItem("token");
     }
   }, []);
 
   const login = async (email, password) => {
     const res = await API.post("/auth/login", { email, password });
-    setUser(res.data.user);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    localStorage.setItem("token", res.data.token);
+    const token = res.data.token;
+
+    // ✅ Decode user info from token
+    const decoded = jwtDecode(token);
+    setUser(decoded);
+
+    localStorage.setItem("token", token);
   };
 
   const signup = async (username, email, password) => {
     const res = await API.post("/auth/signup", { username, email, password });
-    setUser(res.data.user);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    localStorage.setItem("token", res.data.token);
+    const token = res.data.token;
+
+    const decoded = jwtDecode(token);
+    setUser(decoded);
+
+    localStorage.setItem("token", token);
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
     localStorage.removeItem("token");
   };
 
@@ -47,5 +54,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to access the auth context
 export const useAuth = () => useContext(AuthContext);
