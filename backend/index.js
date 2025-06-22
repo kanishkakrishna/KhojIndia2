@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json()); // for parsing JSON body
 app.use(cors({
-  origin: 'https://charming-narwhal-a8bc6f.netlify.app',
+  origin: 'https://khojindia2.netlify.app',
   credentials: true, // if you're using cookies/auth
 }));
 app.use(express.urlencoded({ extended: true }));
