@@ -13,9 +13,16 @@ function Navbar() {
         <Link to="/search">Search</Link>
         <Link to="/leaderboard">Leaderboard</Link>
 
+        {/* Always show Contribute link */}
+        <Link 
+          to="/contribute" 
+          className={`${user ? "text-green-600 font-medium" : "text-gray-500"}`}
+        >
+          Contribute
+        </Link>
+
         {user ? (
           <>
-            <Link to="/contribute" className="text-green-600 font-medium">Contribute</Link>
             <span className="text-gray-700">Hi, {user.username}</span>
             <button
               onClick={logout}
