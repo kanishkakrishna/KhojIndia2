@@ -4,7 +4,10 @@ import { Link } from "react-router-dom";
 import API from "../axios";
 
 function Contribute() {
-  const { user, token } = useAuth(); // Get both user and token
+  const { user } = useAuth();
+  // Get token from localStorage
+  const token = localStorage.getItem("token");
+  
   const [form, setForm] = useState({
     localName: "",
     state: "",
@@ -26,7 +29,8 @@ function Contribute() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!user || !token) { // Strict check for both user and token
+    // Check both user context and localStorage token
+    if (!user || !token) {
       alert("Please login first to contribute a place.");
       return;
     }
@@ -48,7 +52,7 @@ function Contribute() {
       const res = await API.post("/contribute", data, {
         headers: { 
           "Content-Type": "multipart/form-data",
-          "Authorization": `Bearer ${token}` // Explicitly send token
+          "Authorization": `Bearer ${token}`  // Use token from localStorage
         },
       });
       alert("✅ Place contributed successfully!");
@@ -68,11 +72,14 @@ function Contribute() {
     }
   };
 
+  // Check both user context and localStorage token for UI
+  const isAuthenticated = user && token;
+
   return (
     <div className="max-w-xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4 text-center">Contribute a Place</h2>
       
-      {!user || !token ? ( // Double-check both user and token
+      {!isAuthenticated ? (
         <div className="text-center">
           <p className="mb-4">You must be logged in to contribute.</p>
           <div className="flex gap-4 justify-center">
