@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import API from "../axios";
 
 function Contribute() {
-  const { user } = useAuth();
+  const { user, login, signup, logout } = useAuth();
   // Get token from localStorage
   const token = localStorage.getItem("token");
   
