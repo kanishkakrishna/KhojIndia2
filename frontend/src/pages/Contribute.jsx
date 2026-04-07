@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import API from "../axios";
 
 function Contribute() {
-  const { user, login, signup, logout } = useAuth();
+  const { user } = useAuth();
   // Get token from localStorage
   const token = localStorage.getItem("token");
   
@@ -13,8 +13,9 @@ function Contribute() {
     state: "",
     district: "",
     description: "",
-    image: null,
+    media: null, // 'image' ko 'media' kar diya backend match karne ke liye
   });
+  
   const [loading, setLoading] = useState(false);
   const [fileInputKey, setFileInputKey] = useState(Date.now());
 
@@ -35,7 +36,7 @@ function Contribute() {
       return;
     }
 
-    if (form.image && form.image.size > 5 * 1024 * 1024) {
+    if (form.media && form.media.size > 5 * 1024 * 1024) {
       alert("Image size exceeds 5MB limit. Please choose a smaller image.");
       return;
     }
@@ -44,7 +45,7 @@ function Contribute() {
 
     const data = new FormData();
     Object.entries(form).forEach(([key, value]) => {
-      if (key === "image" && value === null) return;
+      if (key === "media" && value === null) return;
       data.append(key, value);
     });
 
@@ -52,27 +53,30 @@ function Contribute() {
       const res = await API.post("/contribute", data, {
         headers: { 
           "Content-Type": "multipart/form-data",
-          "Authorization": `Bearer ${token}`  // Use token from localStorage
+          "Authorization": `Bearer ${token}`
         },
       });
-      alert("✅ Place contributed successfully!");
+      alert("✅ Place contributed successfully! You earned 1 Coin!");
+      
+      // Form reset
       setForm({
         localName: "",
         state: "",
         district: "",
         description: "",
-        image: null,
+        media: null,
       });
       setFileInputKey(Date.now());
+      
     } catch (err) {
       console.error("Contribution error:", err);
+      // Backend se jo proper error message aayega (jaise 50 character wala), wo yahan dikhega
       alert(err.response?.data?.error || "❌ Failed to contribute place.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Check both user context and localStorage token for UI
   const isAuthenticated = user && token;
 
   return (
@@ -95,7 +99,7 @@ function Contribute() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             name="localName"
-            placeholder="Local Name"
+            placeholder="Local Name (e.g., Hidden Waterfall)"
             value={form.localName}
             onChange={handleChange}
             className="w-full border p-2 rounded"
@@ -103,7 +107,7 @@ function Contribute() {
           />
           <input
             name="state"
-            placeholder="State"
+            placeholder="State (e.g., Maharashtra)"
             value={form.state}
             onChange={handleChange}
             className="w-full border p-2 rounded"
@@ -111,34 +115,50 @@ function Contribute() {
           />
           <input
             name="district"
-            placeholder="District"
+            placeholder="District (e.g., Pune)"
             value={form.district}
             onChange={handleChange}
             className="w-full border p-2 rounded"
             required
           />
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={form.description}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
-          <input
-            name="image"
-            type="file"
-            accept="image/*"
-            onChange={handleChange}
-            className="w-full"
-            key={fileInputKey}
-          />
+          
+          <div>
+            <textarea
+              name="description"
+              placeholder="Describe the beauty and experience of this place..."
+              value={form.description}
+              onChange={handleChange}
+              className="w-full border p-2 rounded min-h-[120px]"
+              required
+              minLength={50}
+              maxLength={1000}
+            />
+            <p className="text-xs text-gray-500 text-right">
+              {form.description.length}/1000 (Min 50 chars)
+            </p>
+          </div>
+
+          <div className="border p-2 rounded bg-gray-50">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Upload a beautiful photo <span className="text-red-500">*</span>
+            </label>
+            <input
+              name="media" // Backend match karne ke liye media kiya
+              type="file"
+              accept="image/*"
+              onChange={handleChange}
+              className="w-full"
+              key={fileInputKey}
+              required // Photo zaroori hai!
+            />
+          </div>
+
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700 transition font-bold"
             disabled={loading}
           >
-            {loading ? "Submitting..." : "Submit"}
+            {loading ? "Uploading to KhojIndia..." : "Submit Place"}
           </button>
         </form>
       )}
