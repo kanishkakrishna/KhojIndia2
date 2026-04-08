@@ -7,19 +7,22 @@ import Places from "./pages/Places";
 import Search from "./pages/Search";
 import Leaderboard from "./pages/Leaderboard";
 import Navbar from "./components/Navbar";
+import Welcome from "./pages/homepage";
+import PlaceDetails from "./pages/PlaceDetails";
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar /> {/* ✅ Add this above Routes */}
       <Routes>
-        <Route path="/" element={<h1>Welcome to KhojIndia</h1>} />
+        <Route path="/" element={<Welcome/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/contribute" element={<Contribute />} />
         <Route path="/places" element={<Places />} />
         <Route path="/search" element={<Search />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/place/:id" element={<PlaceDetails />} />
       </Routes>
     </BrowserRouter>
   );

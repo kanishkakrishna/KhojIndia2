@@ -1,6 +1,7 @@
 // src/pages/Places.jsx
 import { useEffect, useState } from "react";
-import API from "../axios"; // ✅ Use the custom API instance
+import { Link } from "react-router-dom"; // ✅ Link import karna zaroori hai
+import API from "../axios"; 
 
 function Places() {
   const [places, setPlaces] = useState([]);
@@ -13,7 +14,7 @@ function Places() {
         setIsLoading(true);
         setError(null);
 
-        const res = await API.get("/places"); // ✅ Cleaner call
+        const res = await API.get("/places"); 
 
         if (res.data && Array.isArray(res.data.places)) {
           setPlaces(res.data.places);
@@ -43,9 +44,11 @@ function Places() {
       ) : places.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {places.map((place) => (
-            <div
+            // ✅ Yahan DIV ko LINK se replace kar diya aur URL set kar diya
+            <Link
+              to={`/place/${place._id}`}
               key={place._id}
-              className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-5 flex flex-col justify-between border border-gray-200"
+              className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-5 flex flex-col justify-between border border-gray-200 cursor-pointer"
             >
               <div>
                 {place.mediaUrl && (
@@ -68,7 +71,7 @@ function Places() {
                   </p>
                 )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       ) : (

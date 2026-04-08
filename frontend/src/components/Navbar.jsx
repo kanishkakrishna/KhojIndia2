@@ -23,7 +23,6 @@ function Navbar() {
 
         {user ? (
           <>
-            <span className="text-gray-700">Hi, {user.username}</span>
             <button
               onClick={logout}
               className="bg-red-500 text-white px-3 py-1 rounded"

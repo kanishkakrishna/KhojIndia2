@@ -1,6 +1,5 @@
-// src/pages/Leaderboard.jsx
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../axios"; // ✅ Apna custom axios import karo
 
 function Leaderboard() {
   const [leaders, setLeaders] = useState([]);
@@ -13,19 +12,15 @@ function Leaderboard() {
         setIsLoading(true);
         setError(null);
 
-        const API_BASE_URL = import.meta.env.VITE_APP_API_URL || "http://localhost:9000";
-        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/leaderboard`);
+        // ✅ Bas ek line mein clean API call (No env variables needed here)
+        const res = await API.get("/leaderboard");
         
-        // --- THE CHANGE IS HERE ---
-        // Access the 'leaderboard' property from the response data
         if (res.data && Array.isArray(res.data.leaderboard)) {
           setLeaders(res.data.leaderboard);
         } else {
-          // Handle cases where 'leaderboard' property might be missing or not an array
-          console.warn("API response did not contain an array at 'res.data.leaderboard'", res.data);
+          console.warn("API response error:", res.data);
           setError("Invalid leaderboard data received.");
         }
-        // --- END OF CHANGE ---
 
       } catch (err) {
         console.error("Failed to fetch leaderboard", err);

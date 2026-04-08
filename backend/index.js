@@ -5,12 +5,18 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
-app.use(express.json()); // for parsing JSON body
+
+// ✅ Sahi CORS Setup (Local aur Live dono ke liye)
 app.use(cors({
-  origin: 'https://khojindia2.netlify.app',
-  credentials: true, // if you're using cookies/auth
+  origin: [
+    'http://localhost:3000', // Agar CRA (React) use kar rahe ho
+    'http://localhost:5173', // Agar Vite use kar rahe ho
+    'https://khojindia2.netlify.app' // Tumhari live website
+  ],
+  credentials: true,
 }));
+
+app.use(express.json()); // JSON data parse karne ke liye
 app.use(express.urlencoded({ extended: true }));
 
 // ✅ Connect MongoDB
@@ -18,12 +24,12 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.log("MongoDB connection error:", err));
 
+// ✅ API Routes
 const userRoutes = require("./routes/userRoutes");
 app.use("/api", userRoutes);
 
-// ✅ Import and use your placeRoutes
 const placeRoutes = require("./routes/placeRoutes");
-app.use("/api", placeRoutes); // ⬅️ This means routes will start with /api
+app.use("/api", placeRoutes); 
 
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);

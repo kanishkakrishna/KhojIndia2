@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
     const res = await API.post("/auth/login", { email, password });
     const token = res.data.token;
 
-    // ✅ Decode user info from token
+    // Decode user info from token
     const decoded = jwtDecode(token);
     setUser(decoded);
 
@@ -33,13 +33,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (username, email, password) => {
-    const res = await API.post("/auth/signup", { username, email, password });
-    const token = res.data.token;
-
-    const decoded = jwtDecode(token);
-    setUser(decoded);
-
-    localStorage.setItem("token", token);
+    // 1. Backend pe naya user banao (Signup api token nahi bhejti)
+    await API.post("/auth/signup", { username, email, password });
+    
+    // 2. Signup successful hone ke baad turant login karwa do taaki token mil jaye
+    await login(email, password);
   };
 
   const logout = () => {
