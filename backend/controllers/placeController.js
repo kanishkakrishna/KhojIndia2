@@ -21,10 +21,10 @@ const addPlace = async (req, res) => {
     console.log("📁 File:", req.file);
     console.log("👤 User from token:", req.user);
 
-    // 1. Sirf Zaroori Fields Nikale (Purana kachra saaf, naya 'description' add)
+    // 1. Sirf Zaroori Fields Nikale
     const { state, district, localName, description } = req.body;
 
-    // 2. Photo Required Check (Agar photo nahi hai toh form yahi reject kar do)
+    // 2. Photo Required Check
     if (!req.file) {
       return res.status(400).json({ error: "Photo is required. Please upload an image." });
     }
@@ -35,30 +35,30 @@ const addPlace = async (req, res) => {
     });
     const mediaUrl = result.secure_url;
 
-    // 4. Local file delete karo (Memory bachane ke liye)
+    // 4. Local file delete karo
     if (fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
 
-    // 5. User Details nikalo
+    // ✅ 5. User Details nikalo (Ab token se asli naam aayega!)
     const userEmail = req.user?.email || "anonymous";
-    const userName = req.user?.username || "Anonymous Yatri"; // Agar frontend se username aaye toh save ho jayega
+    const userName = req.user?.name || req.user?.username || "Anonymous Yatri"; // 👈 Yahan update kiya hai
 
     // 6. Naya Place Object Banao
     const newPlace = new Place({
       state,
       district,
       localName,
-      description, // Naya description field
+      description,
       mediaUrl,
-      contributedBy: userName,
+      contributedBy: userName, // 👈 Yahan update hoga
       contributorEmail: userEmail,
       // hashtags: [] -> AI wala code baad mein yahan aayega!
     });
 
     await newPlace.save();
 
-    // 7. Increment user's coins (Leaderboard ke liye!)
+    // 7. Increment user's coins
     const user = await User.findOne({ email: userEmail });
     if (user) {
       user.coins = (user.coins || 0) + 1;
@@ -74,12 +74,9 @@ const addPlace = async (req, res) => {
     });
   } catch (err) {
     console.error("🔥 Error while adding place:", err);
-    
-    // Agar Description ki limit (50-1000) fail hoti hai, toh proper error bhejo
     if (err.name === 'ValidationError') {
       return res.status(400).json({ error: err.message });
     }
-    
     res.status(500).json({ error: "Server error while adding place" });
   }
 };
@@ -95,13 +92,12 @@ const searchPlaces = async (req, res) => {
 
     const regex = new RegExp(query, "i");
 
-    // Search mein description bhi add kar diya, taaki user keyword se bhi dhoondh sake
     const results = await Place.find({
       $or: [
         { state: regex },
         { district: regex },
         { localName: regex },
-        { description: regex }, // Ab log description ke words se bhi search kar payenge
+        { description: regex },
       ],
     });
 
@@ -122,15 +118,15 @@ const getPlaceById = async (req, res) => {
   }
 };
 
-// 2. Naya review/comment save karna
+// ✅ 2. Naya review/comment save karna
 const addReview = async (req, res) => {
   try {
     const { comment } = req.body;
     const newReview = new Review({
       placeId: req.params.id,
       comment,
-      userName: req.user.username || "Anonymous Yatri", // Auth middleware se aayega
-      userEmail: req.user.email
+      userName: req.user?.name || req.user?.username || "Anonymous Yatri", // 👈 Yahan update kiya hai
+      userEmail: req.user?.email || "anonymous"
     });
     await newReview.save();
     res.status(201).json(newReview);
@@ -148,4 +144,5 @@ const getReviews = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch reviews" });
   }
 };
+
 module.exports = { getPlaces, addPlace, searchPlaces, getPlaceById, addReview, getReviews };

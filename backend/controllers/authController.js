@@ -2,7 +2,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-// Signup
+// Signup (Isme koi change nahi kiya hai)
 const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -20,7 +20,7 @@ const signup = async (req, res) => {
   }
 };
 
-// Login
+// Login (✅ Yahan token ko update kiya hai)
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -31,7 +31,16 @@ const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    // ✅ NAYA TOKEN LOGIC: Ab isme id, username aur email teeno jayenge
+    const token = jwt.sign(
+      { 
+        id: user._id, 
+        name: user.username, // Tumhara field 'username' hai, usko 'name' key mein daal rahe hain
+        email: user.email 
+      }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: "7d" } // 1h se badha kar 7d kar diya, baar baar login nahi karna padega
+    );
 
     res.status(200).json({ token });
   } catch (err) {
