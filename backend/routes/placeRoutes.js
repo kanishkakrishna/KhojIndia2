@@ -6,7 +6,8 @@ const {
   searchPlaces,
   getPlaceById, // Naya import
   addReview,    // Naya import
-  getReviews    // Naya import
+  getReviews,   // Naya import
+  getPlaceVibe
 } = require("../controllers/placeController");
 
 const upload = require("../upload");
@@ -22,6 +23,9 @@ router.get("/search", searchPlaces);
 router.get("/places/:id", getPlaceById);               // 1. Ek jagah ki detail laane ke liye
 router.get("/places/:id/reviews", getReviews);         // 2. Us jagah ke saare reviews laane ke liye
 router.post("/places/:id/reviews", verifyToken, addReview); // 3. Naya review daalne ke liye (Login zaroori hai)
+
+// Phir apne routes mein ek naya line add karo (Contribute route se pehle)
+router.get("/places/:id/vibe", getPlaceVibe); // 👈 Naya AI Vibe Route
 
 // --- Contribute Route ---
 router.post(

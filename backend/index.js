@@ -11,6 +11,7 @@ app.use(cors({
   origin: [
     'http://localhost:3000', // Agar CRA (React) use kar rahe ho
     'http://localhost:5173', // Agar Vite use kar rahe ho
+    'http://localhost:5174',
     'https://khojindia2.netlify.app' // Tumhari live website
   ],
   credentials: true,

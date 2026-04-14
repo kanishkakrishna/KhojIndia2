@@ -18,7 +18,10 @@ const placeSchema = new mongoose.Schema({
     required: [true, "Photo is required. Please upload an image."] 
   },
   
-  hashtags: [{ type: String }],
+ hashtags: {
+    type: [String],
+    default: []
+  },
 
   contributedBy: String, 
   contributorEmail: {

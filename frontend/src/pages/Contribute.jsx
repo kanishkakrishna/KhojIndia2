@@ -1,6 +1,8 @@
+// src/pages/Contribute.jsx
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast"; // ✅ Toast Import Kiya
 import API from "../axios";
 
 function Contribute() {
@@ -13,7 +15,7 @@ function Contribute() {
     state: "",
     district: "",
     description: "",
-    media: null, // 'image' ko 'media' kar diya backend match karne ke liye
+    media: null, 
   });
   
   const [loading, setLoading] = useState(false);
@@ -30,18 +32,19 @@ function Contribute() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check both user context and localStorage token
     if (!user || !token) {
-      alert("Please login first to contribute a place.");
+      toast.error("Please login first to contribute a place.");
       return;
     }
 
     if (form.media && form.media.size > 5 * 1024 * 1024) {
-      alert("Image size exceeds 5MB limit. Please choose a smaller image.");
+      toast.error("Image size exceeds 5MB limit. Please choose a smaller image.");
       return;
     }
 
     setLoading(true);
+    // ⏳ Toast Loading Start
+    const loadingToast = toast.loading("AI Bouncer is scanning your place... 🕵️‍♂️");
 
     const data = new FormData();
     Object.entries(form).forEach(([key, value]) => {
@@ -56,7 +59,10 @@ function Contribute() {
           "Authorization": `Bearer ${token}`
         },
       });
-      alert("✅ Place contributed successfully! You earned 1 Coin!");
+      
+      // ✅ Success Alert
+      toast.dismiss(loadingToast);
+      toast.success("Awesome! Your Hidden Gem is live! 🎉 You earned 1 Coin!");
       
       // Form reset
       setForm({
@@ -70,8 +76,25 @@ function Contribute() {
       
     } catch (err) {
       console.error("Contribution error:", err);
-      // Backend se jo proper error message aayega (jaise 50 character wala), wo yahan dikhega
-      alert(err.response?.data?.error || "❌ Failed to contribute place.");
+      toast.dismiss(loadingToast); // Loading roko
+
+      // 🚨 AI BOUNCER REJECTION (403 Error pakda)
+      if (err.response && err.response.status === 403) {
+        toast.error(
+          (t) => (
+            <span>
+              <b>AI Bouncer Stopped You! 🛑</b><br/>
+              <span style={{ fontSize: "14px", color: "#555", display: "block", marginTop: "4px" }}>
+                {err.response.data.reason}
+              </span>
+            </span>
+          ),
+          { duration: 6000 } // 6 seconds ke liye dikhega
+        );
+      } else {
+        // Normal Validation Error
+        toast.error(err.response?.data?.error || "❌ Failed to contribute place.");
+      }
     } finally {
       setLoading(false);
     }
@@ -143,13 +166,13 @@ function Contribute() {
               Upload a beautiful photo <span className="text-red-500">*</span>
             </label>
             <input
-              name="media" // Backend match karne ke liye media kiya
+              name="media" 
               type="file"
               accept="image/*"
               onChange={handleChange}
               className="w-full"
               key={fileInputKey}
-              required // Photo zaroori hai!
+              required 
             />
           </div>
 
@@ -158,7 +181,7 @@ function Contribute() {
             className="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700 transition font-bold"
             disabled={loading}
           >
-            {loading ? "Uploading to KhojIndia..." : "Submit Place"}
+            {loading ? "Scanning & Uploading..." : "Submit Place"}
           </button>
         </form>
       )}

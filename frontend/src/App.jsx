@@ -1,5 +1,6 @@
 // src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast"; // ✅ Naya Import
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Contribute from "./pages/Contribute";
@@ -13,7 +14,8 @@ import PlaceDetails from "./pages/PlaceDetails";
 function App() {
   return (
     <BrowserRouter>
-      <Navbar /> {/* ✅ Add this above Routes */}
+      <Toaster position="top-center" reverseOrder={false} /> {/* ✅ Toaster Add Kiya */}
+      <Navbar /> 
       <Routes>
         <Route path="/" element={<Welcome/>} />
         <Route path="/login" element={<Login />} />
@@ -29,4 +31,3 @@ function App() {
 }
 
 export default App;
-
