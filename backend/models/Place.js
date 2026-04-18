@@ -32,6 +32,10 @@ const placeSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
+  embedding: { 
+  type: [Number], // Kyunki yeh ek array of numbers hoga
+  default: [] 
+  }
 }, { timestamps: true }); 
 
 module.exports = mongoose.model("Place", placeSchema, "Sthan");

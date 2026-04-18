@@ -9,8 +9,11 @@ const app = express();
 // ✅ Sahi CORS Setup (Local aur Live dono ke liye)
 app.use(cors({
   origin: [
+    'http://127.0.0.1:3000',
     'http://localhost:3000', // Agar CRA (React) use kar rahe ho
-    'http://localhost:5173', // Agar Vite use kar rahe ho
+    'http://localhost:5173',
+    'http://127.0.0.1:5173', // Agar Vite use kar rahe ho
+    'http://127.0.0.1:5174',
     'http://localhost:5174',
     'https://khojindia2.netlify.app' // Tumhari live website
   ],

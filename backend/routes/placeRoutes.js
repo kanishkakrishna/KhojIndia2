@@ -4,15 +4,16 @@ const {
   getPlaces, 
   addPlace, 
   searchPlaces,
-  getPlaceById, // Naya import
-  addReview,    // Naya import
-  getReviews,   // Naya import
-  getPlaceVibe
+  getPlaceById, 
+  addReview,    
+  getReviews,   
+  getPlaceVibe,
+  generateAIPlan // 👈 Ye add kar diya import mein!
 } = require("../controllers/placeController");
 
 const upload = require("../upload");
 const validateState = require("../middlewares/validateState");
-const checkDuplicate = require("../middlewares/checkDuplicate");
+// const checkDuplicate = require("../middlewares/checkDuplicate"); // 👈 Ise comment kar diya/hata diya, AI apna kaam karega
 const verifyToken = require("../middlewares/verifyToken");
 
 // --- Pehle wale Routes ---
@@ -20,12 +21,15 @@ router.get("/places", getPlaces);
 router.get("/search", searchPlaces);
 
 // --- Naye Phase 2 Routes (Dynamic & Reviews) ---
-router.get("/places/:id", getPlaceById);               // 1. Ek jagah ki detail laane ke liye
-router.get("/places/:id/reviews", getReviews);         // 2. Us jagah ke saare reviews laane ke liye
-router.post("/places/:id/reviews", verifyToken, addReview); // 3. Naya review daalne ke liye (Login zaroori hai)
+router.get("/places/:id", getPlaceById);               
+router.get("/places/:id/reviews", getReviews);         
+router.post("/places/:id/reviews", verifyToken, addReview); 
 
-// Phir apne routes mein ek naya line add karo (Contribute route se pehle)
-router.get("/places/:id/vibe", getPlaceVibe); // 👈 Naya AI Vibe Route
+// --- Generate planned by AI ---
+router.post('/plan-trip', generateAIPlan); // 👈 Yahan se 'placeController.' hata diya
+
+// --- AI Vibe Route ---
+router.get("/places/:id/vibe", getPlaceVibe); 
 
 // --- Contribute Route ---
 router.post(
@@ -33,7 +37,7 @@ router.post(
   verifyToken,                   
   upload.single("media"),
   validateState,
-  checkDuplicate,
+  // checkDuplicate hata diya yahan se
   addPlace
 );
 
