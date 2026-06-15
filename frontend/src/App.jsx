@@ -8,7 +8,7 @@ import Places from "./pages/Places";
 import Search from "./pages/Search";
 import Leaderboard from "./pages/Leaderboard";
 import Navbar from "./components/Navbar";
-import Welcome from "./pages/homepage";
+import Welcome from "./pages/Homepage";
 import PlaceDetails from "./pages/PlaceDetails";
 import AiTripPlanner from "./pages/AiTripPlanner";
 
