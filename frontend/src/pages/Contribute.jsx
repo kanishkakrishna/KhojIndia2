@@ -59,6 +59,7 @@ function Contribute() {
       return;
     }
 
+    // ⏱️ API call se pehle loading ON
     setLoading(true);
     const loadingToast = toast.loading("AI Bouncer is scanning your place... 🕵️‍♂️");
 
@@ -93,7 +94,7 @@ function Contribute() {
               <b>AI Bouncer Stopped You! 🛑</b>
               <br />
               <span style={{ fontSize: "14px", color: "#555", display: "block", marginTop: "4px" }}>
-                {err.response.data.reason}
+                {err.response.data.reason || err.response.data.detail || err.response.data.error || "AI says this place is too famous!"}
               </span>
             </span>
           ),
@@ -103,6 +104,7 @@ function Contribute() {
         toast.error(err.response?.data?.error || "❌ Failed to contribute place.");
       }
     } finally {
+      // 🛑 Chahe Pass ho ya Fail, Loading OFF
       setLoading(false);
     }
   };
@@ -112,23 +114,17 @@ function Contribute() {
   const charPct = Math.min((charCount / 1000) * 100, 100);
 
   return (
-    <div 
-  className="relative min-h-screen" 
-  style={{ fontFamily: "'Lato', sans-serif" }}
->
-  {/* ── Background Layer (Fixed Effect) ── */}
-  <div className="fixed inset-0 -z-10 overflow-hidden">
-    <img
-      src={BG_IMAGE}
-      alt="Background"
-      className="w-full h-full object-cover"
-      style={{ 
-        objectPosition: "center",
-        // Agar brightness ya saturation chahiye toh yahan add kar sakte ho
-        filter: "brightness(0.4)" 
-      }}
-    />
-  </div>
+    <div className="relative min-h-screen" style={{ fontFamily: "'Lato', sans-serif" }}>
+      {/* ── Background Layer (Fixed Effect) ── */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <img
+          src={BG_IMAGE}
+          alt="Background"
+          className="w-full h-full object-cover"
+          style={{ objectPosition: "center", filter: "brightness(0.4)" }}
+        />
+      </div>
+
       {/* Google Fonts */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lato:wght@400;600;700&display=swap');
@@ -151,9 +147,7 @@ function Contribute() {
           background: rgba(255, 255, 255, 0.98);
           box-shadow: 0 0 0 3px rgba(201, 123, 43, 0.12);
         }
-        .contribute-input::placeholder {
-          color: #b09070;
-        }
+        .contribute-input::placeholder { color: #b09070; }
 
         .submit-btn {
           width: 100%;
@@ -205,9 +199,7 @@ function Contribute() {
           display: block;
         }
 
-        .form-card {
-          animation: slideUp 0.5s ease both;
-        }
+        .form-card { animation: slideUp 0.5s ease both; }
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(24px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -226,22 +218,25 @@ function Contribute() {
           justify-content: center;
           flex-shrink: 0;
         }
+        @keyframes spin { 
+          from { transform: rotate(0deg) } 
+          to { transform: rotate(360deg) } 
+        }
       `}</style>
 
       <div
-  style={{
-    minHeight: "100vh",
-    position: "relative", // Z-index ke liye zaroori hai
-    // Peela parda hata kar "Dark Premium" parda dala hai
-    background: "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(6,6,6,0.9) 100%)",
-    paddingTop: "48px",
-    paddingBottom: "64px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    zIndex: 1
-  }}
->
+        style={{
+          minHeight: "100vh",
+          position: "relative",
+          background: "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(6,6,6,0.9) 100%)",
+          paddingTop: "48px",
+          paddingBottom: "64px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          zIndex: 1
+        }}
+      >
         {/* ── Hero Header ── */}
         <div style={{ textAlign: "center", marginBottom: "36px", padding: "0 16px" }}>
           <div
@@ -277,8 +272,7 @@ function Contribute() {
                 marginBottom: "10px",
               }}
             >
-              Share a Hidden{" "}
-              <span style={{ color: "#c97b2b" }}>Gem</span> 💎
+              Share a Hidden <span style={{ color: "#c97b2b" }}>Gem</span> 💎
             </h1>
             <p style={{ color: "#6b4226", fontSize: "14px", maxWidth: "380px", lineHeight: 1.6 }}>
               Be the Yatri who puts it on the map. Our AI Bouncer ensures only truly hidden places make it through.
@@ -287,15 +281,7 @@ function Contribute() {
         </div>
 
         {/* ── Form Card / Auth Guard ── */}
-        <div
-          className="form-card"
-          style={{
-            width: "100%",
-            maxWidth: "520px",
-            padding: "0 16px",
-            boxSizing: "border-box",
-          }}
-        >
+        <div className="form-card" style={{ width: "100%", maxWidth: "520px", padding: "0 16px", boxSizing: "border-box" }}>
           {!isAuthenticated ? (
             /* ── Not Logged In ── */
             <div
@@ -310,14 +296,7 @@ function Contribute() {
               }}
             >
               <div style={{ fontSize: "3.5rem", marginBottom: "16px" }}>🔒</div>
-              <h2
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "1.5rem",
-                  color: "#2d1a0e",
-                  marginBottom: "8px",
-                }}
-              >
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.5rem", color: "#2d1a0e", marginBottom: "8px" }}>
                 Yatri Login Required
               </h2>
               <p style={{ color: "#7a5c3a", fontSize: "14px", marginBottom: "28px", lineHeight: 1.6 }}>
@@ -370,56 +349,28 @@ function Contribute() {
               }}
             >
               {/* Greeting */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  marginBottom: "28px",
-                  paddingBottom: "20px",
-                  borderBottom: "1px solid #f0e0c8",
-                }}
-              >
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "28px", paddingBottom: "20px", borderBottom: "1px solid #f0e0c8" }}>
                 <div
                   style={{
-                    width: "42px",
-                    height: "42px",
-                    borderRadius: "50%",
+                    width: "42px", height: "42px", borderRadius: "50%",
                     background: "linear-gradient(135deg, #c97b2b, #e8a04a)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "18px",
-                    flexShrink: 0,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "18px", flexShrink: 0,
                   }}
                 >
                   🧭
                 </div>
                 <div>
-                  <p style={{ fontSize: "12px", color: "#b09070", marginBottom: "2px" }}>
-                    Logged in as
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "'Playfair Display', serif",
-                      fontWeight: 700,
-                      color: "#2d1a0e",
-                      fontSize: "15px",
-                    }}
-                  >
+                  <p style={{ fontSize: "12px", color: "#b09070", marginBottom: "2px" }}>Logged in as</p>
+                  <p style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: "#2d1a0e", fontSize: "15px" }}>
                     {user?.name || user?.email || "Yatri"}
                   </p>
                 </div>
                 <div
                   style={{
-                    marginLeft: "auto",
-                    background: "#fef3e2",
-                    color: "#b8660a",
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    padding: "4px 12px",
-                    borderRadius: "50px",
-                    border: "1px solid #f5d9a8",
+                    marginLeft: "auto", background: "#fef3e2", color: "#b8660a",
+                    fontSize: "11px", fontWeight: 700, padding: "4px 12px",
+                    borderRadius: "50px", border: "1px solid #f5d9a8",
                   }}
                 >
                   🪙 Earn 1 Coin
@@ -427,46 +378,24 @@ function Contribute() {
               </div>
 
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-
                 {/* Place Name */}
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                     <div className="step-badge">1</div>
                     <label className="field-label" style={{ margin: 0 }}>Place Name</label>
                   </div>
-                  <input
-                    className="contribute-input"
-                    name="localName"
-                    placeholder="e.g., Hidden Waterfall of Dudhsagar"
-                    value={form.localName}
-                    onChange={handleChange}
-                    required
-                  />
+                  <input className="contribute-input" name="localName" placeholder="e.g., Hidden Waterfall of Dudhsagar" value={form.localName} onChange={handleChange} required />
                 </div>
 
-                {/* State + District side by side */}
+                {/* Location */}
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                     <div className="step-badge">2</div>
                     <label className="field-label" style={{ margin: 0 }}>Location</label>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                    <input
-                      className="contribute-input"
-                      name="state"
-                      placeholder="State (e.g., Goa)"
-                      value={form.state}
-                      onChange={handleChange}
-                      required
-                    />
-                    <input
-                      className="contribute-input"
-                      name="district"
-                      placeholder="District (e.g., North Goa)"
-                      value={form.district}
-                      onChange={handleChange}
-                      required
-                    />
+                    <input className="contribute-input" name="state" placeholder="State (e.g., Goa)" value={form.state} onChange={handleChange} required />
+                    <input className="contribute-input" name="district" placeholder="District (e.g., North Goa)" value={form.district} onChange={handleChange} required />
                   </div>
                 </div>
 
@@ -477,52 +406,17 @@ function Contribute() {
                     <label className="field-label" style={{ margin: 0 }}>Description</label>
                   </div>
                   <textarea
-                    className="contribute-input"
-                    name="description"
+                    className="contribute-input" name="description"
                     placeholder="Tell the story — the vibe, the hidden path, the local lore... (min 50 characters)"
-                    value={form.description}
-                    onChange={handleChange}
-                    required
-                    minLength={50}
-                    maxLength={1000}
+                    value={form.description} onChange={handleChange} required minLength={50} maxLength={1000}
                     style={{ minHeight: "130px", resize: "vertical" }}
                   />
-                  {/* Character bar */}
                   <div style={{ marginTop: "6px" }}>
-                    <div
-                      style={{
-                        height: "3px",
-                        borderRadius: "4px",
-                        background: "#f0e0c8",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: "100%",
-                          width: `${charPct}%`,
-                          background:
-                            charCount < 50
-                              ? "#e88a3a"
-                              : charCount > 900
-                              ? "#e85c3a"
-                              : "#6bbf7a",
-                          borderRadius: "4px",
-                          transition: "width 0.2s",
-                        }}
-                      />
+                    <div style={{ height: "3px", borderRadius: "4px", background: "#f0e0c8", overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${charPct}%`, background: charCount < 50 ? "#e88a3a" : charCount > 900 ? "#e85c3a" : "#6bbf7a", borderRadius: "4px", transition: "width 0.2s" }} />
                     </div>
-                    <p
-                      style={{
-                        fontSize: "11px",
-                        color: charCount < 50 ? "#c97b2b" : "#a08060",
-                        textAlign: "right",
-                        marginTop: "4px",
-                      }}
-                    >
-                      {charCount < 50
-                        ? `${50 - charCount} more chars needed`
-                        : `${charCount}/1000`}
+                    <p style={{ fontSize: "11px", color: charCount < 50 ? "#c97b2b" : "#a08060", textAlign: "right", marginTop: "4px" }}>
+                      {charCount < 50 ? `${50 - charCount} more chars needed` : `${charCount}/1000`}
                     </p>
                   </div>
                 </div>
@@ -531,65 +425,23 @@ function Contribute() {
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                     <div className="step-badge">4</div>
-                    <label className="field-label" style={{ margin: 0 }}>
-                      Photo <span style={{ color: "#e85c3a" }}>*</span>
-                    </label>
+                    <label className="field-label" style={{ margin: 0 }}>Photo <span style={{ color: "#e85c3a" }}>*</span></label>
                   </div>
 
                   {previewUrl ? (
-                    /* Preview */
                     <div style={{ position: "relative", borderRadius: "14px", overflow: "hidden" }}>
-                      <img
-                        src={previewUrl}
-                        alt="preview"
-                        style={{ width: "100%", height: "180px", objectFit: "cover", display: "block" }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          background: "linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 50%)",
-                        }}
-                      />
+                      <img src={previewUrl} alt="preview" style={{ width: "100%", height: "180px", objectFit: "cover", display: "block" }} />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 50%)" }} />
                       <button
                         type="button"
-                        onClick={() => {
-                          setPreviewUrl(null);
-                          setForm((p) => ({ ...p, media: null }));
-                          setFileInputKey(Date.now());
-                        }}
-                        style={{
-                          position: "absolute",
-                          top: "10px",
-                          right: "10px",
-                          background: "rgba(255,255,255,0.9)",
-                          border: "none",
-                          borderRadius: "50%",
-                          width: "30px",
-                          height: "30px",
-                          cursor: "pointer",
-                          fontWeight: 700,
-                          fontSize: "14px",
-                          color: "#2d1a0e",
-                        }}
+                        onClick={() => { setPreviewUrl(null); setForm((p) => ({ ...p, media: null })); setFileInputKey(Date.now()); }}
+                        style={{ position: "absolute", top: "10px", right: "10px", background: "rgba(255,255,255,0.9)", border: "none", borderRadius: "50%", width: "30px", height: "30px", cursor: "pointer", fontWeight: 700, fontSize: "14px", color: "#2d1a0e" }}
                       >
                         ✕
                       </button>
-                      <p
-                        style={{
-                          position: "absolute",
-                          bottom: "10px",
-                          left: "14px",
-                          color: "#fff",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        📷 {form.media?.name}
-                      </p>
+                      <p style={{ position: "absolute", bottom: "10px", left: "14px", color: "#fff", fontSize: "12px", fontWeight: 600 }}>📷 {form.media?.name}</p>
                     </div>
                   ) : (
-                    /* Drop zone */
                     <label
                       className={`drop-zone${dragOver ? " over" : ""}`}
                       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -597,45 +449,23 @@ function Contribute() {
                       onDrop={handleDrop}
                       style={{ display: "block", cursor: "pointer" }}
                     >
-                      <input
-                        name="media"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleChange}
-                        key={fileInputKey}
-                        required
-                        style={{ display: "none" }}
-                      />
+                      <input name="media" type="file" accept="image/*" onChange={handleChange} key={fileInputKey} required style={{ display: "none" }} />
                       <div style={{ fontSize: "2.5rem", marginBottom: "8px" }}>🖼️</div>
-                      <p style={{ color: "#2d1a0e", fontWeight: 700, fontSize: "14px", marginBottom: "4px" }}>
-                        Drop your photo here
-                      </p>
-                      <p style={{ color: "#b09070", fontSize: "12px" }}>
-                        or <span style={{ color: "#c97b2b", fontWeight: 700 }}>click to browse</span> · Max 5MB
-                      </p>
+                      <p style={{ color: "#2d1a0e", fontWeight: 700, fontSize: "14px", marginBottom: "4px" }}>Drop your photo here</p>
+                      <p style={{ color: "#b09070", fontSize: "12px" }}>or <span style={{ color: "#c97b2b", fontWeight: 700 }}>click to browse</span> · Max 5MB</p>
                     </label>
                   )}
                 </div>
 
-                {/* AI Bouncer hint */}
-                <div
-                  style={{
-                    background: "rgba(255,243,220,0.8)",
-                    border: "1px solid #f5d9a8",
-                    borderRadius: "12px",
-                    padding: "12px 16px",
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "10px",
-                  }}
-                >
+                {/* AI Bouncer Hint */}
+                <div style={{ background: "rgba(255,243,220,0.8)", border: "1px solid #f5d9a8", borderRadius: "12px", padding: "12px 16px", display: "flex", alignItems: "flex-start", gap: "10px" }}>
                   <span style={{ fontSize: "18px", flexShrink: 0 }}>🤖</span>
                   <p style={{ fontSize: "12px", color: "#7a5020", lineHeight: 1.6 }}>
                     <b>AI Bouncer</b> will verify your place isn't already famous or a duplicate. Only truly hidden gems pass!
                   </p>
                 </div>
 
-                {/* Submit */}
+                {/* Submit Button */}
                 <button className="submit-btn" type="submit" disabled={loading}>
                   {loading ? (
                     <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
@@ -646,7 +476,6 @@ function Contribute() {
                     "Submit My Hidden Gem 🗺️"
                   )}
                 </button>
-                <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
               </form>
             </div>
           )}

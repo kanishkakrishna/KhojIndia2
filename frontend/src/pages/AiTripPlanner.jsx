@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from "../axios";
 
 const BG = "/images/atp.avif";
 
@@ -15,7 +15,8 @@ const AiTripPlanner = () => {
     setError('');
     setTripPlan(null);
     try {
-      const response = await axios.post('http://127.0.0.1:9000/api/plan-trip', { prompt });
+      // 🚀 YAHAN CHANGE HUA HAI: axios.post aur localhost hat gaya, API.post lag gaya
+      const response = await API.post('/plan-trip', { prompt });
       setTripPlan(response.data);
     } catch (err) {
       setError('Oops! The AI Planner is currently unavailable. Please try again later.');
