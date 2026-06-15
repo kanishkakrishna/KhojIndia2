@@ -4,7 +4,7 @@ import axios from "axios";
 // Create an instance
 const API = axios.create({
   // Abhi local testing ke liye seedha 9000 daal do
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:9000/api",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // Attach token to every request if available
