@@ -14,7 +14,7 @@ const getPlaces = async (req, res) => {
     res.status(500).json({ error: "Error fetching places" });
   }
 };
-
+const aiBaseUrl = process.env.AI_BACKEND_URL || "http://127.0.0.1:8000";
 // POST: add a new place
 const addPlace = async (req, res) => {
   try {
@@ -37,7 +37,7 @@ const addPlace = async (req, res) => {
     try {
       console.log(`🚀 Checking with AI Security Bouncer for: ${localName}...`);
       
-      const aiResponse = await fetch("http://127.0.0.1:8000/api/analyze-place", {
+      const aiResponse = await fetch(`${aiBaseUrl}/api/analyze-place`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ localName, district, state, description })
@@ -45,7 +45,7 @@ const addPlace = async (req, res) => {
 
       const aiData = await aiResponse.json();
       console.log("👮‍♂️ AI Decision in Node:", aiData);
-
+      console.log("added by me :", aiData.isApproved);
       // 🚨 AGAR BOUNCER NE REJECT KIYA:
       if (aiData.isApproved === false) {
         console.log(`❌ Place Rejected by AI: ${aiData.reason}`);
@@ -76,7 +76,7 @@ const addPlace = async (req, res) => {
     try {
       console.log(`🔍 Checking for clones using Vector Search for: ${localName}...`);
       
-      const hunterResponse = await fetch("http://127.0.0.1:8000/api/check-duplicate", {
+      const hunterResponse = await fetch(`${aiBaseUrl}/api/check-duplicate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -248,7 +248,7 @@ const getPlaceVibe = async (req, res) => {
     console.log(`🤖 Sending ${reviewTexts.length} reviews to AI for Vibe Check...`);
 
     // 3. Python Microservice ko call lagao
-    const aiResponse = await fetch("http://127.0.0.1:8000/api/summarize-reviews", {
+    const aiResponse = await fetch(`${aiBaseUrl}/api/summarize-reviews`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reviews: reviewTexts })
@@ -281,7 +281,7 @@ const generateAIPlan = async (req, res) => {
     console.log(`🤖 Generating AI Trip Plan for prompt: "${prompt}"...`);
 
     // Python FastAPI ko call maar rahe hain (Using standard 'fetch')
-    const aiResponse = await fetch("http://127.0.0.1:8000/api/plan-trip", {
+    const aiResponse = await fetch(`${aiBaseUrl}/api/plan-trip`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query: prompt })

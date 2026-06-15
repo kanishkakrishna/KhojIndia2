@@ -7,19 +7,12 @@ require("dotenv").config();
 const app = express();
 
 // ✅ Sahi CORS Setup (Local aur Live dono ke liye)
-app.use(cors({
-  origin: [
-    'http://127.0.0.1:3000',
-    'http://localhost:3000', // Agar CRA (React) use kar rahe ho
-    'http://localhost:5173',
-    'http://127.0.0.1:5173', // Agar Vite use kar rahe ho
-    'http://127.0.0.1:5174',
-    'http://localhost:5174',
-    'https://khojindia2.netlify.app' // Tumhari live website
-  ],
-  credentials: true,
-}));
-
+const corsOptions = {
+  // Agar env mein link hai toh wo use karo, warna local testing ke liye sabko allow kar do '*'
+  origin: process.env.FRONTEND_URL || '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, // Agar cookies/tokens bhej raha hai toh ye zaroori hai
+};
 app.use(express.json()); // JSON data parse karne ke liye
 app.use(express.urlencoded({ extended: true }));
 
