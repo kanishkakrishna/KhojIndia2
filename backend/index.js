@@ -13,6 +13,10 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true, // Agar cookies/tokens bhej raha hai toh ye zaroori hai
 };
+
+// 🚨 YAHAN THI GALTI: Ye line add karni zaroori thi taaki express CORS ko actually use kare!
+app.use(cors(corsOptions)); 
+
 app.use(express.json()); // JSON data parse karne ke liye
 app.use(express.urlencoded({ extended: true }));
 
