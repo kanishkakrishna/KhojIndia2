@@ -69,7 +69,7 @@ const addPlace = async (req, res) => {
       });
     }
 
-    // =====================================================================
+   // =====================================================================
     // ⚔️ STEP 3B: THE CLONE HUNTER (Duplicate Check Vector Search)
     // =====================================================================
     let placeEmbedding = []; // Naya vector save karne ke liye
@@ -90,6 +90,16 @@ const addPlace = async (req, res) => {
       const hunterData = await hunterResponse.json();
       console.log("🎯 Clone Hunter Decision:", hunterData.status);
 
+      // 🚨 NAYA: AGAR PYTHON BACKEND NE ERROR BHEJA (Jaise dimension mismatch)
+      if (hunterData.status === "error") {
+         console.error("❌ Python AI Error:", hunterData.message);
+         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+         return res.status(500).json({ 
+            error: "AI Vector Search mein kalesh ho gaya!",
+            details: hunterData.message
+         });
+      }
+
       // 🚨 AGAR HUNTER KO DUPLICATE MILA:
       if (hunterData.status === "REJECT") {
          console.log(`❌ Clone detected by AI! Matches with: ${hunterData.duplicate_of}`);
@@ -97,8 +107,7 @@ const addPlace = async (req, res) => {
          
          return res.status(409).json({ 
             error: "Arre boss, yeh jagah already KhojIndia par hai!",
-            duplicate_of: hunterData.duplicate_of,
-            similarity: hunterData.similarity_score
+            duplicate_of: hunterData.duplicate_of
          });
       }
 
@@ -106,6 +115,7 @@ const addPlace = async (req, res) => {
       if (hunterData.status === "ACCEPT" && hunterData.new_vector) {
          placeEmbedding = hunterData.new_vector;
       }
+      
     } catch (hunterError) {
       console.error("❌ Hunter Microservice Error:", hunterError.message);
       if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
@@ -113,7 +123,6 @@ const addPlace = async (req, res) => {
         error: "Server Error: AI Clone Hunter abhi offline hai. Thodi der baad try karein." 
       });
     }
-
     // =====================================================================
     // ☁️ STEP 4: Upload to Cloudinary & Save to MongoDB
     // =====================================================================
